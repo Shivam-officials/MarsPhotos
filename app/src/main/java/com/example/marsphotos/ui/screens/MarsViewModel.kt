@@ -25,9 +25,15 @@ import com.example.marsphotos.network.MarsApi
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+sealed interface MarsUiState {
+    data class Success(val photos: String) : MarsUiState
+    data object Loading : MarsUiState
+    data object Error : MarsUiState
+}
+
 class MarsViewModel : ViewModel() {
     /** The mutable State that stores the status of the most recent request */
-    var marsUiState: String by mutableStateOf("")
+    var marsUiState: MarsUiState by mutableStateOf(MarsUiState.Loading)
         private set
 
     /**
@@ -39,16 +45,16 @@ class MarsViewModel : ViewModel() {
 
     /**
      * Gets Mars photos information from the Mars API Retrofit service and updates the
-     * [MarsPhoto] [List] [MutableList].
+     * MarsPhoto [List] [MutableList].
      */
     fun getMarsPhotos() {
         viewModelScope.launch {
-            try{
+            marsUiState = try {
                 val listResult = MarsApi.retrofitService.getPhotos()
-                marsUiState = listResult
-            }catch (e: IOException){
-                Log.d("MarsViewModel","$e is the exception")
-                marsUiState = "nhi hai internet connection"
+                MarsUiState.Success(listResult)
+            } catch (e: IOException) {
+                Log.d("MarsViewModel", "$e is the exception")
+                MarsUiState.Loading
             }
         }
 //        marsUiState = "Set the Mars API status response here!"
