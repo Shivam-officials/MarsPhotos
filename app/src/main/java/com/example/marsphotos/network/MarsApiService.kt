@@ -36,7 +36,7 @@ interface MarsApiService {
 
     // to get the photos through http request
     @GET("photos")
-    fun getPhotos(): String
+    suspend fun getPhotos(): String
 
 }
 
@@ -45,7 +45,8 @@ interface MarsApiService {
  * on retrofit object is very expensive on resource bt recommend using DI instead of singleton pattern for good practice
  */
 object MarsApi{
-    // making a variable which will hold the reference to the future created implementation of the [MarsAPiService] interface
+
+    // making a lazy variable to save resources which will hold the reference to the future created implementation of the [MarsAPiService] interface
    val retrofitService: MarsApiService by lazy {
        /** Create an implementation of the API endpoints defined by the service [MarsApiService] interface.*/
        retrofit.create(MarsApiService::class.java)
