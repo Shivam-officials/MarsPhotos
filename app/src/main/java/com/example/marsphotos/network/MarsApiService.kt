@@ -1,7 +1,9 @@
 package com.example.marsphotos.network
 
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
 
@@ -11,21 +13,18 @@ private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com
 
 /** Create a Retrofit object using the builder pattern */
 val retrofit = Retrofit.Builder() //starts the process of creating a Retrofit object.
-
     // Set the base URL for all API requests made through this Retrofit instance
     .baseUrl(BASE_URL)
 
-    // Add a converter factory to handle response data conversion
-    .addConverterFactory(ScalarsConverterFactory.create())  // This converter handles String responses
-
+    /**
+     *  Add a converter factory to handle response data conversion.
+     *  This converter handles serialization of  responses for json mediaType
+     */
+    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
     // Build the Retrofit object with the specified configuration
     .build()
-/**
- *  Explain the [ScalersConvertFactory]
- *  This converter factory is used for responses that are plain text or simple strings.
- *  It doesn't parse the response into objects, but simply returns the raw String content.
- *  This is suitable for APIs that return basic text data and don't involve complex data structures.
- */
+
+
 
 
 /**
@@ -36,7 +35,7 @@ interface MarsApiService {
 
     // to get the photos through http request
     @GET("photos")
-    suspend fun getPhotos(): String
+    suspend fun getPhotos(): List<MarsPhoto>
 
 }
 
