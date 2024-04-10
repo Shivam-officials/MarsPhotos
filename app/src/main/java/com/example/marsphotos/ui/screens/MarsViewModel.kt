@@ -21,6 +21,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.marsphotos.data.MarsPhotoRepository
+import com.example.marsphotos.data.NetworkMarsPhotoRepository
 import com.example.marsphotos.network.MarsApi
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -48,15 +50,22 @@ class MarsViewModel : ViewModel() {
      * MarsPhoto [List] [MutableList].
      */
     fun getMarsPhotos() {
+        Log.d("MarsViewModel","viewmodel scope coroutine is running STARTED in the parallel")
         viewModelScope.launch {
             marsUiState = try {
-                val listResult = MarsApi.retrofitService.getPhotos()
+//                val listResult = MarsApi.retrofitService.getPhotos()
+
+                val marsPhotoRepository = NetworkMarsPhotoRepository()
+                val listResult = marsPhotoRepository.getPhotos()
+
                 MarsUiState.Success(" Success ${listResult.size} photos are retrieved")
             } catch (e: IOException) {
                 Log.d("MarsViewModel", "$e is the exception")
                 MarsUiState.Error
             }
         }
+        Log.d("MarsViewModel","viewmodel scope coroutine is running in the parallel")
+
 //        marsUiState = "Set the Mars API status response here!"
     }
 }
