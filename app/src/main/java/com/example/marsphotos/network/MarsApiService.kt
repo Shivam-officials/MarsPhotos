@@ -24,7 +24,8 @@ interface MarsApiService {
  * singleton object for creating once and for all  & exposing it to the rest of the App as calling create method
  * on retrofit object is very expensive on resource bt recommend using DI instead of singleton pattern for good practice
  */
-object MarsApi{
+//object MarsApi{
 
+// we dont need it anymore
 
-}
+//}
