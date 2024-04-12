@@ -1,8 +1,7 @@
-
 import com.example.marsphotos.data.NetworkMarsPhotoRepository
 import com.example.marsphotos.fake.FakeDataSource
 import com.example.marsphotos.fake.FakeMarsApiService
-import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -11,7 +10,7 @@ import org.junit.Test
  */
 class NetworkMarkRepositoryTest {
 
-    // checking the getPhotos method of repository
+    /** testing the getPhotos() method of the NetworkMarsPhotosRepository class */
     @Test
     fun marsPhotosRepository_getMarsPhotos_verifyPhotoList() = runTest {
 
@@ -20,6 +19,6 @@ class NetworkMarkRepositoryTest {
         )
 
         // asserting that the repository returned the data from mentioned dataSource
-        assertEquals( FakeDataSource.photoList,repositoryTest.getPhotos() )
+        TestCase.assertEquals(FakeDataSource.photoList, repositoryTest.getPhotos())
     }
 }

@@ -54,26 +54,22 @@ class MarsViewModel(
      * Gets Mars photos information from the Mars API Retrofit service and updates the
      * MarsPhoto [List] [MutableList].
      */
-    fun getMarsPhotos() {
-        Log.d("MarsViewModel","viewmodel scope coroutine is running STARTED in the parallel")
+      fun getMarsPhotos() {
         viewModelScope.launch {
             marsUiState = try {
 //                val listResult = MarsApi.retrofitService.getPhotos()
 
                 val listResult = marsPhotoRepository.getPhotos()
 
-                MarsUiState.Success(" Success ${listResult.size} photos are retrieved")
+                MarsUiState.Success("Success: ${listResult.size} Mars photos retrieved")
             } catch (e: IOException) {
-                Log.d("MarsViewModel", "$e is the exception")
                 MarsUiState.Error
             }
         }
-        Log.d("MarsViewModel","viewmodel scope coroutine is running in the parallel")
 
 //        marsUiState = "Set the Mars API status response here!"
     }
 
-    //todo understand this how it happening
     /**
      * CREATE THE CUSTOM FACTORY FOR OBJECT CREATION
      * creating an companion object for the creation of custom ViewModels factory .
