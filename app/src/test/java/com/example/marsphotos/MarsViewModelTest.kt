@@ -1,22 +1,17 @@
 package com.example.marsphotos
 
-import com.example.marsphotos.data.NetworkMarsPhotoRepository
 import com.example.marsphotos.fake.FakeDataSource
-import com.example.marsphotos.fake.FakeMarsApiService
 import com.example.marsphotos.fake.FakeNetworkRepository
 import com.example.marsphotos.rules.TestDispatcherRule
 import com.example.marsphotos.ui.screens.MarsUiState
 import com.example.marsphotos.ui.screens.MarsViewModel
 import junit.framework.TestCase.assertEquals
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
 
-/**
- * todo do the viewmodel test seriously again there are many holes in your concept
- */
+
 class MarsViewModelTest {
 
     /**
