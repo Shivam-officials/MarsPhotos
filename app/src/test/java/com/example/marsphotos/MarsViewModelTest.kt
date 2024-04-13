@@ -48,8 +48,7 @@ class MarsViewModelTest {
          * MarsViewModel.getMarsPhotos() is called when the ViewModel is initialized due to init block.
          */
         assertEquals(
-            MarsUiState.Success("Success: ${FakeDataSource.photoList.size} Mars " +
-                    "photos retrieved"),
+            MarsUiState.Success(FakeDataSource.photoList),
             marsViewModel.marsUiState
         )
     }

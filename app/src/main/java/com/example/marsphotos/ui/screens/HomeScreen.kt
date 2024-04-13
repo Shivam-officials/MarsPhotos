@@ -20,9 +20,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,41 +45,84 @@ import coil.request.ImageRequest
 import com.example.marsphotos.R
 import com.example.marsphotos.network.model.MarsPhoto
 import com.example.marsphotos.ui.theme.MarsPhotosTheme
+import kotlin.reflect.KFunction0
 
 @Composable
 fun HomeScreen(
     marsUiState: MarsUiState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    retryAction: ()-> Unit,
 ) {
     when (marsUiState) {
         is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-        is MarsUiState.Success -> MarsPhotoCard(
-            photo = marsUiState.photos,
-            modifier = Modifier.fillMaxSize()
+        is MarsUiState.Success -> MarsPhotosGridScreen(
+            photoList = marsUiState.photos,
+            modifier = Modifier,
+            contentPadding = contentPadding
         )
-        is MarsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
+        is MarsUiState.Error -> ErrorScreen(
+            modifier = modifier.fillMaxSize(),
+            retryAction = retryAction
+            )
     }
 }
 
+/**
+ * lazyGrid for displaying mars photo from corl
+ */
 @Composable
-fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier) {
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(photo.imgSrc)
-            .crossfade(true)
-            .build(),
-        placeholder = painterResource(id = R.drawable.loading_img),
-        contentDescription = stringResource(id = R.string.mars_photo),
-        contentScale = ContentScale.Crop
-    )
+fun MarsPhotosGridScreen(
+    photoList: List<MarsPhoto>,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)) {
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Adaptive(150.dp),
+        modifier = modifier,
+        contentPadding = contentPadding
+    ) {
+        items(
+            items = photoList,
+            key = {item: MarsPhoto ->  item.id}
+        ){
+            MarsPhotoCard(photo = it,
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxHeight()
+            )
+        }
+    }
+
+}
+
+/**
+ *  card for displaying an synchronised mars through image request
+ */
+@Composable
+fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier = Modifier) {
+    OutlinedCard(
+        elevation = CardDefaults.elevatedCardElevation( defaultElevation = 5.dp),
+        modifier = modifier
+    ){
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(photo.imgSrc)
+                .crossfade(true)
+                .build(),
+            error = painterResource(id = R.drawable.ic_broken_image),
+            placeholder = painterResource(id = R.drawable.loading_img),
+            contentDescription = stringResource(id = R.string.mars_photo),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 }
 
 /**
  * Error screen when network request fails
  */
 @Composable
-fun ErrorScreen(modifier: Modifier = Modifier) {
+fun ErrorScreen(modifier: Modifier = Modifier, retryAction: () -> Unit) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -81,6 +131,9 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
         Image(painter = painterResource(R.drawable.ic_connection_error), contentDescription = "")
 
         Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
+        Button(onClick = retryAction) {
+            Text(text = stringResource(id = R.string.retry))
+        }
     }
 }
 
@@ -117,11 +170,20 @@ fun ResultScreenPreview() {
 @Preview(showSystemUi = true)
 @Composable
 private fun ErrorScreenPreview() {
-    ErrorScreen(Modifier.fillMaxSize())
+    ErrorScreen(Modifier.fillMaxSize(),{})
 }
 
 @Preview(showSystemUi = true)
 @Composable
 private fun LoadingScreenPreview() {
     LoadingScreen(Modifier.fillMaxSize())
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PhotosGridScreenPreview() {
+    MarsPhotosTheme {
+        val mockData = List(10) { MarsPhoto("$it", "") }
+        MarsPhotosGridScreen(mockData)
+    }
 }
